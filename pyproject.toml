@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "weml-validator"
 version = "0.1.0"
-description = ""
+description = "Validator for the WEML document format by EGW Writings"
 authors = ["Kyrylo Kobets <mjr@itage.biz>"]
 readme = "README.md"
 
@@ -10,7 +10,7 @@ python = "^3.12"
 bs4 = "^0.0.2"
 
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.test.dependencies]
 assertpy = "^1.1"
 
 [build-system]
