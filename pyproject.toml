@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "weml-validator"
-version = "0.1.0"
+version = "0.1.1"
 description = "Validator for the WEML document format by EGW Writings"
 authors = ["Kyrylo Kobets <mjr@itage.biz>"]
 readme = "README.md"

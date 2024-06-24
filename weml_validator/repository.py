@@ -17,11 +17,15 @@ class ValidatorBase:
         result = ValidationResult.success()
         if tag.name != self.tag:  # pragma: no cover
             result.add_node_error("Invalid tag", tag)
+        existing_attrs = set(tag.attrs.keys())
         for attr, rule_set in self._attribute_rules.items():
+            existing_attrs.discard(attr)
             attr_value = tag.attrs.get(attr, None)
             for rule in rule_set:
                 if not rule.validate(attr_value):
                     result.add_node_error(f"Attribute {attr} failed validation with rule: {rule}", tag)
+        if len(existing_attrs) > 0:
+            result.add_node_error(f"Unexpected attributes: {existing_attrs}", tag)
         return result
 
 
@@ -35,7 +39,7 @@ class ValidatorRepository:
     def get_validator(self, tag: str) -> ValidatorBase:
         return self._validators[tag]
 
-    def validate(self, element: bs4.Tag, base_tag) -> ValidationResult:
+    def validate(self, element: bs4.Tag) -> ValidationResult:
         tag = element.name
         if tag not in self._validators:
             return ValidationResult(False, [ValidationError(tag, 0, 0)])

@@ -84,7 +84,7 @@ class ChildrenSubsetValidator(ValidatorBase):
                 child_name = child.name
                 if child_name not in self._allowed_children:
                     result.add_node_error(f"Invalid child `{child_name}` (allowed {self._allowed_children})", tag)
-                result = result.combine_with(ValidatorRepository.get_instance().validate(child, tag.name))
+                result = result.combine_with(ValidatorRepository.get_instance().validate(child))
             else:  # pragma: no cover
                 # todo: How to test this?
                 continue
@@ -106,7 +106,8 @@ class ChildrenSubsetValidator(ValidatorBase):
                 total_children += count
             if total_children != self._expected_child_count:
                 result.add_node_error(
-                    f"Invalid number of children. Got {total_children}, expected: {self._expected_child_count}: {children_count}",
+                    f"Invalid number of children. Got {total_children}, expected {self._expected_child_count}: "
+                    f"{children_count}",
                     tag
                 )
 

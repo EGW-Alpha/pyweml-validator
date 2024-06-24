@@ -5,18 +5,18 @@ from assertpy import fail
 from weml_validator import validate_weml_element
 
 
-def assert_correct_node(node_html: str, parent_node: str | None = None):
-    validation_result = validate_weml_element(node_html, parent_node)
+def assert_correct_node(node_html: str):
+    validation_result = validate_weml_element(node_html)
     if not validation_result:
         for error in validation_result.errors:
             print(f"Node is invalid: {error.message} at {error.line}:{error.column}")
         fail(f"Node {node_html} must be valid")
 
 
-def assert_incorrect_node(node_html: str, parent_node: str | None = None):
-    validation_result = validate_weml_element(node_html, parent_node)
+def assert_incorrect_node(node_html: str):
+    validation_result = validate_weml_element(node_html)
     if validation_result:
-        fail(f"Node {node_html} must not be correct with parent {parent_node}")
+        fail(f"Node {node_html} must not be valid")
 
 
 # noinspection PyMethodMayBeStatic
@@ -32,9 +32,11 @@ class ContainerBlockTestCase(unittest.TestCase):
                                     <w-text-block>text</w-text-block>
                                     <w-text-block>text</w-text-block>
                                 </w-heading>''')
+        assert_incorrect_node('<w-heading level="1" attr="value"><w-text-block>text</w-text-block></w-heading>')
 
     def test_para(self):
         assert_correct_node('<w-para><w-text-block>text</w-text-block></w-para>')
+        assert_incorrect_node('<w-para attr="value"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para> x <w-text-block>text</w-text-block></w-para>')
         assert_correct_node(
             '<w-para skip="1" indent="-5" role="date" align="right"><w-text-block>text</w-text-block></w-para>')
@@ -57,9 +59,15 @@ class ContainerBlockTestCase(unittest.TestCase):
         assert_correct_node(f'<figure><img src="https://example.com" /></figure>')
         assert_incorrect_node(f'<figure><img src="https://example.com" /><img src="https://example.com" /></figure>')
         assert_correct_node(
-            f'<figure><img src="https://example.com" alt="text" /><figcaption><w-text-block>text</w-text-block></figcaption></figure>')
+            f'<figure>'
+            f'<img src="https://example.com" alt="text" /><figcaption><w-text-block>text</w-text-block></figcaption>'
+            f'</figure>')
         assert_incorrect_node(
-            f'<figure><img src="https://example.com" alt="text" /><figcaption><w-text-block>text</w-text-block></figcaption><figcaption><w-text-block>text</w-text-block></figcaption></figure>')
+            f'<figure>'
+            f'<img src="https://example.com" alt="text" />'
+            f'<figcaption><w-text-block>text</w-text-block></figcaption>'
+            f'<figcaption><w-text-block>text</w-text-block></figcaption>'
+            f'</figure>')
         assert_incorrect_node(
             f'<figure><img src="https://example.com" alt="text" /><figcaption>text</figcaption></figure>')
         assert_incorrect_node(
@@ -114,7 +122,6 @@ class ContainerBlockTestCase(unittest.TestCase):
         assert_correct_node(f'<table><thead></thead></table>')
         assert_correct_node(f'<table><tbody></tbody></table>')
         assert_incorrect_node(f'<table><tbody></tbody><tbody></tbody></table>')
-
 
 
 # noinspection PyMethodMayBeStatic
@@ -184,7 +191,7 @@ class InlinesTestCase(unittest.TestCase):
         assert_correct_node("<w-lang lang='en' dir='rtl'>test</w-entity>")
         assert_correct_node("<w-lang lang='en'>test</w-entity>")
         assert_incorrect_node("<w-lang dir='ltr'>test</w-entity>")
-        assert_incorrect_node("<w-lang lang='verylong'></w-entity>")
+        assert_incorrect_node("<w-lang lang='very long'></w-entity>")
 
     def test_w_entity(self):
         assert_correct_node("<w-entity type='addressee' value='value'></w-entity>")
@@ -238,7 +245,7 @@ class InlinesTestCase(unittest.TestCase):
         assert_correct_node('<w-sent></w-sent>')
         assert_correct_node('<w-sent>text</w-sent>')
         assert_correct_node('<w-sent>text<w-lang lang="en">note</w-lang></w-sent>')
-        assert_incorrect_node('<w-sent>text <w-sent>subsentence</w-sent> text </w-sent>')
+        assert_incorrect_node('<w-sent>text <w-sent>sub sentence</w-sent> text </w-sent>')
 
     def test_a(self):
         assert_correct_node('<a href="https://example.com">text</a>')

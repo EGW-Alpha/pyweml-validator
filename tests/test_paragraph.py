@@ -5,18 +5,18 @@ from assertpy import fail
 from weml_validator import validate_weml_paragraph
 
 
-def assert_correct_paragraph(node_html: str, parent_node: str | None = None):
-    validation_result = validate_weml_paragraph(node_html, parent_node)
+def assert_correct_paragraph(node_html: str):
+    validation_result = validate_weml_paragraph(node_html)
     if not validation_result:
         for error in validation_result.errors:
             print(f"Node is invalid: {error.message} at {error.line}:{error.column}")
-        fail(f"Node {node_html} must be valid")
+        fail(f"Paragraph {node_html} must be valid")
 
 
-def assert_incorrect_paragraph(node_html: str, parent_node: str | None = None):
-    validation_result = validate_weml_paragraph(node_html, parent_node)
+def assert_incorrect_paragraph(node_html: str):
+    validation_result = validate_weml_paragraph(node_html)
     if validation_result:
-        fail(f"Paragraph `{node_html}` must not be correct")
+        fail(f"Paragraph `{node_html}` must not be valid")
 
 
 # noinspection PyMethodMayBeStatic

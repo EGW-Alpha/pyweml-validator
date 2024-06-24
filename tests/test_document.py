@@ -21,5 +21,6 @@ def assert_incorrect_document(document_html: str):
 
 # noinspection PyMethodMayBeStatic
 class DocumentTestCase(unittest.TestCase):
-    def test_paragraph(self):
+    def test_document(self):
+        # Not implemented yet
         pass
