@@ -152,7 +152,8 @@ validator_instance.add_validator(CombinedValidator(
         tag="a",
         allowed_children=INLINES,
         attribute_rules={
-            "href": [AttributeRuleRequired()]
+            "href": [AttributeRuleRequired()],
+            "title": [AttributeRuleOptional()],
         },
         unique=True
     ),

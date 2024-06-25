@@ -249,6 +249,8 @@ class InlinesTestCase(unittest.TestCase):
 
     def test_a(self):
         assert_correct_node('<a href="https://example.com">text</a>')
+        assert_correct_node('<a href="https://example.com" title="something">text</a>')
+        assert_correct_node('<a href="egw://bible/1965.63113#" title="Test">Revelation 14</a>')
         assert_correct_node('<a id="xxx"></a>')
         assert_correct_node('<a id="xxx"/>')
         assert_incorrect_node('<a>text</a>')
