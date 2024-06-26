@@ -44,6 +44,9 @@ class ContainerBlockTestCase(unittest.TestCase):
         assert_incorrect_node('<w-para role="a"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para align="a"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para skip="a"><w-text-block>text</w-text-block></w-para>')
+        assert_correct_node('<w-para ><hr/></w-para>')
+        assert_incorrect_node('<w-para><hr/><hr/></w-para>')
+        assert_correct_node('<w-para ><w-list><w-li><w-text-block></w-text-block></w-li></w-list></w-para>')
 
     def test_para_group(self):
         para = '<w-para><w-text-block>text</w-text-block></w-para>'

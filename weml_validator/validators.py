@@ -39,9 +39,10 @@ validator_instance.add_validator(ChildrenSubsetValidator(
                                    "letterhead", "salutation", "signature-date", "signature-line", "signature-source",
                                    "bible-text", "devotional-text", "poem-source", "publication-info", "title")]
     },
-    allowed_children=["w-text-block"],
-    required_children={"w-text-block": 1},
+    allowed_children=BLOCKS,
+    # required_children={"w-text-block": 1},
     expected_child_count=1
+
 ))
 
 validator_instance.add_validator(ChildrenSubsetValidator(
