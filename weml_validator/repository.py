@@ -22,7 +22,7 @@ class ValidatorBase:
             existing_attrs.discard(attr)
             attr_value = tag.attrs.get(attr, None)
             for rule in rule_set:
-                if not rule.validate(attr_value):
+                if not rule.validate(attr_value, tag):
                     result.add_node_error(f"Attribute {attr} failed validation with rule: {rule}", tag)
         if len(existing_attrs) > 0:
             result.add_node_error(f"Unexpected attributes: {existing_attrs}", tag)

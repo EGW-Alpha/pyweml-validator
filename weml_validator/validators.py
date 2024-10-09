@@ -1,5 +1,5 @@
 from weml_validator.attribute_validators import AttributeRuleRequired, AttributeRuleEnum, AttributeRuleOptional, \
-    AttributeRuleMaxLength
+    AttributeRuleMaxLength, AttributeRuleListMarker, AttributeRuleListStart
 from weml_validator.repository import ValidatorRepository
 from weml_validator.tag_validators import EmptyTagValidator, ChildrenSubsetValidator, CombinedValidator
 
@@ -88,7 +88,9 @@ validator_instance.add_validator(EmptyTagValidator(
 validator_instance.add_validator(ChildrenSubsetValidator(
     tag='w-list',
     attribute_rules={
-        "type": [AttributeRuleEnum(None, "ordered", "unordered")]
+        "type": [AttributeRuleEnum(None, "ordered", "unordered")],
+        "marker": [AttributeRuleListMarker()],
+        "start": [AttributeRuleListStart()]
     },
     allowed_children=["w-li"],
     required_children={"w-li": None}
