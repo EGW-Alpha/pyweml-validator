@@ -153,6 +153,11 @@ class BlockTestCase(unittest.TestCase):
         assert_incorrect_node('<w-list><w-li>item</w-li><w-li>item</w-li></w-list>')
         assert_incorrect_node('<w-list>item</w-list>')
         assert_incorrect_node('<w-list><w-li>item</w-li></w-list>')
+        assert_correct_node('<w-list type="unordered" marker="•"><w-li><w-text-block></w-text-block></w-li></w-list>')
+        assert_correct_node('<w-list type="ordered" marker="A"><w-li><w-text-block></w-text-block></w-li></w-list>')
+        assert_correct_node('<w-list type="ordered" marker="I" start="3"><w-li><w-text-block></w-text-block></w-li></w-list>')
+        assert_incorrect_node('<w-list type="ordered" marker="A" start="a"><w-li><w-text-block></w-text-block></w-li></w-list>')
+        assert_incorrect_node('<w-list type="ordered" marker="*" start="a"><w-li><w-text-block></w-text-block></w-li></w-list>')
 
 
 # noinspection PyMethodMayBeStatic
