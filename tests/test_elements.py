@@ -38,8 +38,11 @@ class ContainerBlockTestCase(unittest.TestCase):
         assert_correct_node('<w-para><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para attr="value"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para> x <w-text-block>text</w-text-block></w-para>')
+        # indent should be 0+ (non-negative), not negative values
         assert_correct_node(
-            '<w-para skip="1" indent="-5" role="date" align="right"><w-text-block>text</w-text-block></w-para>')
+            '<w-para skip="1" indent="5" role="date" align="right"><w-text-block>text</w-text-block></w-para>')
+        # Test that negative indent values are now rejected
+        assert_incorrect_node('<w-para indent="-5"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para indent="a"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para role="a"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para align="a"><w-text-block>text</w-text-block></w-para>')
@@ -195,11 +198,16 @@ class InlinesTestCase(unittest.TestCase):
         assert_incorrect_node(create_typed_format("bold", "<z/>"))
 
     def test_w_lang(self):
-        assert_correct_node("<w-lang lang='en' dir='ltr'>test</w-entity>")
-        assert_correct_node("<w-lang lang='en' dir='rtl'>test</w-entity>")
-        assert_correct_node("<w-lang lang='en'>test</w-entity>")
-        assert_incorrect_node("<w-lang dir='ltr'>test</w-entity>")
-        assert_incorrect_node("<w-lang lang='very long'></w-entity>")
+        # According to spec: both lang and dir are optional (No - not required)
+        assert_correct_node("<w-lang lang='en' dir='ltr'>test</w-lang>")
+        assert_correct_node("<w-lang lang='en' dir='rtl'>test</w-lang>")
+        assert_correct_node("<w-lang lang='en'>test</w-lang>")
+        # Both attributes are optional, so only dir should also be valid
+        assert_correct_node("<w-lang dir='ltr'>test</w-lang>")
+        # Empty w-lang should be valid (both attributes optional)
+        assert_correct_node("<w-lang>test</w-lang>")
+        # Test that very long lang codes are rejected (MaxLength=12)
+        assert_incorrect_node("<w-lang lang='very-long-code'>test</w-lang>")
 
     def test_w_entity(self):
         assert_correct_node("<w-entity type='addressee' value='value'></w-entity>")
@@ -207,45 +215,69 @@ class InlinesTestCase(unittest.TestCase):
         assert_incorrect_node("<w-entity type='wrong'></w-entity>")
 
     def test_note(self):
+        # According to spec: w-note-body contains w-note-para, which contains w-text-block
         correct_content = ('<w-note-header>Header</w-note-header>'
-                           '<w-note-body><w-text-block>Body</w-text-block></w-note-body>')
+                           '<w-note-body><w-note-para><w-text-block>Body</w-text-block></w-note-para></w-note-body>')
         assert_correct_node(f'<w-note>{correct_content}</w-note>')
         assert_incorrect_node('<w-note></w-note>')
+        # Test with w-note-para structure
         assert_correct_node(
             '''<w-note>
                 <w-note-header>Header</w-note-header>
-                <w-note-body><w-text-block>Body<br/></w-text-block></w-note-body>
+                <w-note-body><w-note-para><w-text-block>Body<br/></w-text-block></w-note-para></w-note-body>
             </w-note>'''
         )
+        # Test with multiple w-note-para elements
+        assert_correct_node(
+            '''<w-note>
+                <w-note-header>Header</w-note-header>
+                <w-note-body>
+                    <w-note-para><w-text-block>First paragraph</w-text-block></w-note-para>
+                    <w-note-para><w-text-block>Second paragraph</w-text-block></w-note-para>
+                </w-note-body>
+            </w-note>'''
+        )
+        # Test w-note-header with inline elements (allowed per spec)
+        assert_correct_node(
+            '''<w-note>
+                <w-note-header><a href="#ref">8</a></w-note-header>
+                <w-note-body><w-note-para><w-text-block>Body</w-text-block></w-note-para></w-note-body>
+            </w-note>'''
+        )
+        # Test duplicate w-note-header should fail
         assert_incorrect_node(
             '''<w-note>
                 <w-note-header>Header</w-note-header>
                 <w-note-header>Header</w-note-header>
-                <w-note-body><w-text-block>Body<br/></w-text-block></w-note-body>
+                <w-note-body><w-note-para><w-text-block>Body<br/></w-text-block></w-note-para></w-note-body>
             </w-note>'''
         )
+        # Test duplicate w-note-body should fail
         assert_incorrect_node(
             '''<w-note>
-                <w-note-body><w-text-block>Body<br/></w-text-block></w-note-body>
+                <w-note-body><w-note-para><w-text-block>Body<br/></w-text-block></w-note-para></w-note-body>
                 <w-note-header>Header</w-note-header>
-                <w-note-body><w-text-block>Body<br/></w-text-block></w-note-body>
+                <w-note-body><w-note-para><w-text-block>Body<br/></w-text-block></w-note-para></w-note-body>
             </w-note>'''
         )
+        # Test wrong element name should fail
         assert_incorrect_node(
             '<w-note>'
             '<w-note-head>Header</w-note-head>'
-            '<w-note-body><w-text-block>Body</w-text-block></w-note-body>'
+            '<w-note-body><w-note-para><w-text-block>Body</w-text-block></w-note-para></w-note-body>'
             '</w-note>')
+        # Test text directly in w-note should fail
         assert_incorrect_node(
             f'''<w-note>
                 {correct_content}
                 text
             </w-note>'''
         )
+        # Test w-note-header with inline tag (br) should fail - header should contain only text or specific inline elements
         assert_incorrect_node(
             '''<w-note>
                 <w-note-header>Header<br/></w-note-header>
-                <w-note-body><w-text-block>Body</w-text-block></w-note-body>
+                <w-note-body><w-note-para><w-text-block>Body</w-text-block></w-note-para></w-note-body>
             </w-note>'''
         )
 
