@@ -7,7 +7,7 @@ validator_instance = ValidatorRepository.get_instance()
 
 INLINES = ["", "a", "br", "w-entity", "w-format", "w-lang", "w-non-egw", "w-note", "w-page", "w-sent"]
 BLOCKS = ["figure", "w-list", "w-text-block", "table", "hr"]
-CONTAINERS = ["w-heading", "w-page", "w-para", "w-para-group"]
+CONTAINERS = ["w-heading", "w-page", "w-para", "w-para-group", "w-toc"]
 
 validator_instance.add_validator(ChildrenSubsetValidator(
     tag='div',
@@ -20,7 +20,8 @@ validator_instance.add_validator(ChildrenSubsetValidator(
     tag="w-heading",
     attribute_rules={
         "skip": [AttributeRuleEnum(None, "1")],
-        "level": [AttributeRuleRequired(), AttributeRuleEnum("1", "2", "3", "4", "5", "6")]
+        "level": [AttributeRuleRequired(), AttributeRuleEnum("1", "2", "3", "4", "5", "6")],
+        "alt-text": [AttributeRuleOptional()]
     },
     allowed_children=["w-text-block"],
     required_children={"w-text-block": 1},
@@ -32,8 +33,7 @@ validator_instance.add_validator(ChildrenSubsetValidator(
     attribute_rules={
         "skip": [AttributeRuleEnum(None, "1")],
         "indent": [
-            AttributeRuleEnum(None, "0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "1", "2", "3",
-                              "4", "5", "6", "7", "8", "9", "10")],
+            AttributeRuleEnum(None, "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10")],
         "align": [AttributeRuleEnum(None, "left", "right", "center", "justify")],
         "role": [AttributeRuleEnum(None, "address", "addressee", "author", "date", "place", "introduction",
                                    "letterhead", "salutation", "signature-date", "signature-line", "signature-source",
@@ -49,6 +49,7 @@ validator_instance.add_validator(ChildrenSubsetValidator(
     tag="w-para-group",
     attribute_rules={
         "skip": [AttributeRuleEnum(None, "1")],
+        "type": [AttributeRuleEnum(None, "frame")]
     },
     allowed_children=["w-para"],
     required_children={"w-para": None}
@@ -67,6 +68,10 @@ validator_instance.add_validator(ChildrenSubsetValidator(
 
 validator_instance.add_validator(ChildrenSubsetValidator(
     tag='figure',
+    attribute_rules={
+        "align": [AttributeRuleEnum(None, "left", "center", "right", "justify")],
+        "wrap": [AttributeRuleEnum(None, "0", "1")]
+    },
     allowed_children=["img", "figcaption"],
     required_children={"img": 1, "figcaption": lambda x: x <= 1},
 ))
@@ -81,7 +86,9 @@ validator_instance.add_validator(EmptyTagValidator(
     tag='img',
     attribute_rules={
         "src": [AttributeRuleRequired()],
-        "alt": [AttributeRuleOptional()]
+        "alt": [AttributeRuleOptional()],
+        "width": [AttributeRuleOptional()],
+        "height": [AttributeRuleOptional()]
     }
 ))
 
@@ -200,7 +207,7 @@ validator_instance.add_validator(ChildrenSubsetValidator(
 validator_instance.add_validator(ChildrenSubsetValidator(
     tag="w-lang",
     attribute_rules={
-        "lang": [AttributeRuleRequired(), AttributeRuleMaxLength(5)],
+        "lang": [AttributeRuleOptional(), AttributeRuleMaxLength(12)],
         "dir": [AttributeRuleEnum(None, "ltr", "rtl")]
     },
     allowed_children=INLINES
@@ -219,7 +226,7 @@ validator_instance.add_validator(ChildrenSubsetValidator(
     tag="w-note",
     attribute_rules={
         "type": [
-            AttributeRuleEnum(None, "footnote", "endnote")
+            AttributeRuleEnum(None, "footnote", "chapter-endnote", "book-endnote")
         ]
     },
     allowed_children=["w-note-header", "w-note-body"],
@@ -229,14 +236,24 @@ validator_instance.add_validator(ChildrenSubsetValidator(
 
 validator_instance.add_validator(ChildrenSubsetValidator(
     tag="w-note-body",
-    allowed_children=["w-text-block"],
-    required_children={"w-text-block": None}
-
+    allowed_children=["w-note-para"],
+    required_children={"w-note-para": None}
 ))
+
+validator_instance.add_validator(ChildrenSubsetValidator(
+    tag="w-note-para",
+    attribute_rules={
+        "indent": [AttributeRuleEnum(None, "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10")],
+        "align": [AttributeRuleEnum(None, "left", "center", "right", "justify")]
+    },
+    allowed_children=["w-text-block"],
+    required_children={"w-text-block": 1},
+    expected_child_count=1
+))
+
 validator_instance.add_validator(ChildrenSubsetValidator(
     tag="w-note-header",
-    allowed_children=[""],
-    required_children={"": None}
+    allowed_children=["", "a"]
 ))
 
 validator_instance.add_validator(EmptyTagValidator(
@@ -250,6 +267,10 @@ validator_instance.add_validator(ChildrenSubsetValidator(
     tag="w-sent",
     allowed_children=INLINES,
     unique=True
+))
+
+validator_instance.add_validator(EmptyTagValidator(
+    tag="w-toc"
 ))
 
 # endregion
