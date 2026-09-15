@@ -1,0 +1,456 @@
+[
+  {
+    "meta": {
+      "id": 127,
+      "type": "book",
+      "language": "en",
+      "code": "AA"
+    },
+    "body": [
+      {
+        "id": 1,
+        "kind": "paragraph-container",
+        "child": {
+          "kind": "paragraph",
+          "type": "paragraph",
+          "children": [
+            {
+              "kind": "text",
+              "content": "Paragraph text."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "meta": {
+      "id": 200,
+      "type": "book",
+      "language": "fr",
+      "code": "CP",
+      "title": "Conquérants pacifiques",
+      "original-id": 127,
+      "author": "Ellen G. White",
+      "publisher": "Example Publisher",
+      "publication-year": "2026",
+      "publication-start-year": null,
+      "publication-end-year": null,
+      "total-pages": "600",
+      "isbn": "978-0-00-000000-2",
+      "description": "Example translated publication.",
+      "purchase-link": "https://example.org/books/cp",
+      "version-id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "hash": "publication-version-hash"
+    },
+    "body": [
+      {
+        "id": 1,
+        "hash": "heading-hash",
+        "refcode-short": null,
+        "refcode-long": null,
+        "kind": "heading-container",
+        "level": 1,
+        "child": {
+          "kind": "paragraph",
+          "type": "paragraph",
+          "children": [
+            {
+              "kind": "text",
+              "content": "Chapitre 1"
+            }
+          ]
+        }
+      },
+      {
+        "id": 2,
+        "hash": "paragraph-hash",
+        "refcode-short": "CP 1.1",
+        "refcode-long": "Conquérants pacifiques 1.1",
+        "kind": "paragraph-container",
+        "indent": 1,
+        "child": {
+          "kind": "paragraph",
+          "type": "paragraph",
+          "children": [
+            {
+              "kind": "text",
+              "content": "Un exemple de "
+            },
+            {
+              "kind": "color",
+              "foreground": "#336699",
+              "children": [
+                {
+                  "kind": "text",
+                  "content": "texte coloré."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 3,
+        "kind": "page-break",
+        "number": "2"
+      }
+    ]
+  },
+  {
+    "kind": "heading-container",
+    "level": 2,
+    "alt-text": "Short heading",
+    "override-chapter-number": 7,
+    "skip": true,
+    "background": "#eeeeee",
+    "foreground": "#333333",
+    "child": {
+      "kind": "paragraph",
+      "type": "paragraph",
+      "children": [
+        {
+          "kind": "text",
+          "content": "Full heading"
+        }
+      ]
+    }
+  },
+  {
+    "kind": "paragraph-container",
+    "type": "introduction",
+    "indent": 2,
+    "align": "left",
+    "skip": true,
+    "background": "#fff8cc",
+    "foreground": "#333333",
+    "child": {
+      "kind": "paragraph",
+      "type": "paragraph",
+      "children": [
+        {
+          "kind": "text",
+          "content": "Introduction text."
+        }
+      ]
+    }
+  },
+  {
+    "kind": "paragraph-group-container",
+    "type": "frame",
+    "skip": true,
+    "children": [
+      {
+        "kind": "paragraph-container",
+        "child": {
+          "kind": "paragraph",
+          "type": "paragraph",
+          "children": [
+            {
+              "kind": "text",
+              "content": "Framed paragraph."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "kind": "toc",
+    "child": {
+      "kind": "paragraph",
+      "type": "paragraph",
+      "children": [
+        {
+          "kind": "text",
+          "content": "Contents"
+        }
+      ]
+    }
+  },
+  {
+    "kind": "page-break",
+    "number": "iv"
+  },
+  {
+    "kind": "paragraph",
+    "type": "poem",
+    "align": "center",
+    "children": [
+      {
+        "kind": "text",
+        "content": "First line"
+      },
+      {
+        "kind": "br"
+      },
+      {
+        "kind": "text",
+        "content": "Second line"
+      }
+    ]
+  },
+  {
+    "kind": "hr"
+  },
+  {
+    "kind": "image",
+    "src": "https://example.org/images/map.png",
+    "alt": "Map of the region",
+    "align": "center",
+    "wrap": 0,
+    "width": 640,
+    "height": 480,
+    "header": {
+      "kind": "paragraph",
+      "type": "paragraph",
+      "children": [
+        {
+          "kind": "text",
+          "content": "Figure 1. Map."
+        }
+      ]
+    }
+  },
+  {
+    "kind": "list",
+    "type": "ordered",
+    "marker": "1",
+    "start": "3",
+    "children": [
+      {
+        "kind": "list-item",
+        "children": [
+          {
+            "kind": "paragraph",
+            "type": "paragraph",
+            "children": [
+              {
+                "kind": "text",
+                "content": "Third item"
+              }
+            ]
+          },
+          {
+            "kind": "list",
+            "type": "unordered",
+            "children": [
+              {
+                "kind": "list-item",
+                "children": [
+                  {
+                    "kind": "paragraph",
+                    "type": "paragraph",
+                    "children": [
+                      {
+                        "kind": "text",
+                        "content": "Nested item"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "kind": "table",
+    "header": [
+      {
+        "kind": "tr",
+        "children": [
+          {
+            "kind": "td",
+            "header": true,
+            "colspan": 2,
+            "children": [
+              {
+                "kind": "paragraph",
+                "type": "paragraph",
+                "children": [
+                  {
+                    "kind": "text",
+                    "content": "Summary"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "children": [
+      {
+        "kind": "tr",
+        "children": [
+          {
+            "kind": "td",
+            "align": "left",
+            "valign": "top",
+            "indent": 1,
+            "children": [
+              {
+                "kind": "paragraph",
+                "type": "paragraph",
+                "children": [
+                  {
+                    "kind": "text",
+                    "content": "Label"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "td",
+            "children": [
+              {
+                "kind": "paragraph",
+                "type": "paragraph",
+                "children": [
+                  {
+                    "kind": "text",
+                    "content": "Value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "kind": "note-para",
+    "indent": 0,
+    "align": "left",
+    "child": {
+      "kind": "paragraph",
+      "type": "paragraph",
+      "children": [
+        {
+          "kind": "text",
+          "content": "Note body text."
+        }
+      ]
+    }
+  },
+  {
+    "kind": "text",
+    "content": "A & B: \"quoted text\"\nNext line"
+  },
+  {
+    "kind": "br"
+  },
+  {
+    "kind": "text-format",
+    "type": "bold",
+    "children": [
+      {
+        "kind": "text-format",
+        "type": "italic",
+        "children": [
+          {
+            "kind": "text",
+            "content": "Bold and italic"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "kind": "sentence",
+    "children": [
+      {
+        "kind": "text",
+        "content": "A complete sentence."
+      }
+    ]
+  },
+  {
+    "kind": "link",
+    "href": "egw://book/127.5#section",
+    "title": "AA 1.1",
+    "children": [
+      {
+        "kind": "text",
+        "content": "Read the passage"
+      }
+    ]
+  },
+  {
+    "kind": "anchor",
+    "id": "section"
+  },
+  {
+    "kind": "lang",
+    "lang": "he",
+    "dir": "rtl",
+    "children": [
+      {
+        "kind": "text",
+        "content": "שלום"
+      }
+    ]
+  },
+  {
+    "kind": "non-egw",
+    "type": "preface",
+    "children": [
+      {
+        "kind": "text",
+        "content": "Editorial preface."
+      }
+    ]
+  },
+  {
+    "kind": "entity",
+    "type": "date",
+    "value": "1911-01-01",
+    "children": [
+      {
+        "kind": "text",
+        "content": "January 1, 1911"
+      }
+    ]
+  },
+  {
+    "kind": "note",
+    "type": "footnote",
+    "ref": [
+      {
+        "kind": "text",
+        "content": "1"
+      }
+    ],
+    "children": [
+      {
+        "kind": "note-para",
+        "child": {
+          "kind": "paragraph",
+          "type": "paragraph",
+          "children": [
+            {
+              "kind": "text",
+              "content": "Additional explanation."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "kind": "color",
+    "background": "#a1b2c380",
+    "foreground": "#336699",
+    "children": [
+      {
+        "kind": "text",
+        "content": "Colored text"
+      }
+    ]
+  }
+]

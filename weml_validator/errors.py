@@ -32,7 +32,7 @@ class ValidationResult:
         return ValidationResult(True, [])
 
     def add_node_error(self, message: str, node: bs4.Tag):
-        self._errors.append(ValidationError(f"Error in {node}: {message}", node.sourceline, node.sourcepos))
+        self._errors.append(ValidationError(f"Error in {node}: {message}", node.sourceline or 0, node.sourcepos or 0))
         self._is_valid = False
 
     def __iadd__(self, other):

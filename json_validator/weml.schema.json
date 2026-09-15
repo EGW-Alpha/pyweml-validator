@@ -1,0 +1,2159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WEML JSON document",
+  "description": "WEML JSON input validation. Unknown properties are rejected; supported compatibility forms are accepted without normalization.",
+  "$comment": "Row ID uniqueness and strict integer tokens are checked by json_validator. Register the weml-link format checker for complete link validation. Fragment entry points are #/$defs/container and #/$defs/node.",
+  "type": "object",
+  "properties": {
+    "meta": {
+      "$ref": "#/$defs/metadata"
+    },
+    "body": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/row"
+      }
+    }
+  },
+  "required": [
+    "meta",
+    "body"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "int32": {
+      "type": "integer",
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "color-value": {
+      "type": "string",
+      "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})(?![\\s\\S])"
+    },
+    "guid": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}|\\{[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}\\}|\\([0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}\\))(?![\\s\\S])"
+    },
+    "link-value": {
+      "type": "string",
+      "pattern": "^(?:[hH][tT][tT][pP][sS]?://[^/\\s?#]+[^\\s]*|[mM][aA][iI][lL][tT][oO]:[^@\\s/]+@[^@\\s/]+|[eE][gG][wW]://(?:[bB][oO][oO][kK]|[bB][iI][bB][lL][eE])/[+-]?[0-9]+\\.[+-]?[0-9]+(?:#[^\\s]*)?|[eE][gG][wW]://[mM][iI][sS][sS][iI][nN][gG]/[^\\s]+)(?![\\s\\S])",
+      "format": "weml-link",
+      "$comment": "The Python format checker additionally validates URI syntax and Int32 EGW reference components."
+    },
+    "heading-container": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[hH][eE][aA][dD][iI][nN][gG]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+        },
+        "level": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "alt-text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "override-chapter-number": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "skip": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
+        },
+        "background": {
+          "$ref": "#/$defs/color-value"
+        },
+        "foreground": {
+          "$ref": "#/$defs/color-value"
+        },
+        "child": {
+          "$ref": "#/$defs/paragraph"
+        }
+      },
+      "required": [
+        "kind",
+        "child"
+      ],
+      "additionalProperties": false
+    },
+    "paragraph-container": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "indent": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "align": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "skip": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
+        },
+        "background": {
+          "$ref": "#/$defs/color-value"
+        },
+        "foreground": {
+          "$ref": "#/$defs/color-value"
+        },
+        "child": {
+          "$ref": "#/$defs/block"
+        }
+      },
+      "required": [
+        "kind",
+        "child"
+      ],
+      "additionalProperties": false
+    },
+    "paragraph-group-container": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[gG][rR][oO][uU][pP]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "skip": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/paragraph-container"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "toc": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[tT][oO][cC])(?![\\s\\S])"
+        },
+        "child": {
+          "$ref": "#/$defs/paragraph"
+        }
+      },
+      "required": [
+        "kind",
+        "child"
+      ],
+      "additionalProperties": false
+    },
+    "page-break": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[pP][aA][gG][eE]-[bB][rR][eE][aA][kK])(?![\\s\\S])"
+        },
+        "number": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "paragraph": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH])(?![\\s\\S])"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]|[bB][lL][oO][cC][kK][qQ][uU][oO][tT][eE]|[pP][oO][eE][mM])(?![\\s\\S])"
+        },
+        "align": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inline"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "hr": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[hH][rR])(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[iI][mM][aA][gG][eE])(?![\\s\\S])"
+        },
+        "src": {
+          "type": "string"
+        },
+        "alt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "align": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "wrap": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "width": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "height": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "header": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/paragraph"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "src"
+      ],
+      "additionalProperties": false
+    },
+    "list": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[lL][iI][sS][tT])(?![\\s\\S])"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^(?:[oO][rR][dD][eE][rR][eE][dD]|[uU][nN][oO][rR][dD][eE][rR][eE][dD])(?![\\s\\S])"
+        },
+        "marker": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "start": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/list-item"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "list-item": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[lL][iI][sS][tT]-[iI][tT][eE][mM])(?![\\s\\S])"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/block"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "table": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[tT][aA][bB][lL][eE])(?![\\s\\S])"
+        },
+        "header": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tr"
+          },
+          "default": []
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tr"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "tr": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[tT][rR])(?![\\s\\S])"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/td"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "td": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[tT][dD])(?![\\s\\S])"
+        },
+        "header": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
+        },
+        "align": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "valign": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "indent": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rowspan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "colspan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/block"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "note-para": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[nN][oO][tT][eE]-[pP][aA][rR][aA])(?![\\s\\S])"
+        },
+        "indent": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "align": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "child": {
+          "$ref": "#/$defs/block"
+        }
+      },
+      "required": [
+        "kind",
+        "child"
+      ],
+      "additionalProperties": false
+    },
+    "text": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[tT][eE][xX][tT])(?![\\s\\S])"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "content"
+      ],
+      "additionalProperties": false
+    },
+    "br": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[bB][rR])(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "text-format": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[tT][eE][xX][tT]-[fF][oO][rR][mM][aA][tT])(?![\\s\\S])"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^(?:[bB][oO][lL][dD]|[iI][tT][aA][lL][iI][cC]|[uU][nN][dD][eE][rR][lL][iI][nN][eE]|[sS][uU][pP][eE][rR][sS][cC][rR][iI][pP][tT]|[sS][uU][bB][sS][cC][rR][iI][pP][tT]|[sS][mM][aA][lL][lL]-[cC][aA][pP][sS]|[aA][lL][lL]-[cC][aA][pP][sS]|[oO][vV][eE][rR][lL][iI][nN][eE])(?![\\s\\S])"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inline"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "sentence": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[sS][eE][nN][tT][eE][nN][cC][eE])(?![\\s\\S])"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inline"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "link": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[lL][iI][nN][kK])(?![\\s\\S])"
+        },
+        "href": {
+          "$ref": "#/$defs/link-value"
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inline"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind",
+        "href"
+      ],
+      "additionalProperties": false
+    },
+    "anchor": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[aA][nN][cC][hH][oO][rR])(?![\\s\\S])"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "lang": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[lL][aA][nN][gG])(?![\\s\\S])"
+        },
+        "lang": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dir": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inline"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "non-egw": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[nN][oO][nN]-[eE][gG][wW])(?![\\s\\S])"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^(?:[aA][pP][pP][eE][nN][dD][iI][xX]|[cC][oO][mM][mM][eE][nN][tT]|[fF][oO][rR][eE][wW][oO][rR][dD]|[iI][nN][tT][rR][oO]|[nN][oO][tT][eE]|[pP][rR][eE][fF][aA][cC][eE]|[tT][eE][xX][tT])(?![\\s\\S])"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inline"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "entity": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[eE][nN][tT][iI][tT][yY])(?![\\s\\S])"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^(?:[aA][dD][dD][rR][eE][sS][sS][eE][eE]|[dD][aA][tT][eE]|[pP][lL][aA][cC][eE]|[tT][oO][pP][iI][cC]|[tT][oO][pP][iI][cC]-[wW][oO][rR][dD])(?![\\s\\S])"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inline"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "note": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[nN][oO][tT][eE])(?![\\s\\S])"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^(?:[fF][oO][oO][tT][nN][oO][tT][eE]|[cC][hH][aA][pP][tT][eE][rR]-[eE][nN][dD][nN][oO][tT][eE]|[bB][oO][oO][kK]-[eE][nN][dD][nN][oO][tT][eE])(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inline"
+          },
+          "default": []
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/block"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "color": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[cC][oO][lL][oO][rR])(?![\\s\\S])"
+        },
+        "background": {
+          "$ref": "#/$defs/color-value"
+        },
+        "foreground": {
+          "$ref": "#/$defs/color-value"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inline"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "background"
+          ]
+        },
+        {
+          "required": [
+            "foreground"
+          ]
+        }
+      ]
+    },
+    "node": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[hH][eE][aA][dD][iI][nN][gG]-[cC][oO][nN][tT][aA][iI][nN][eE][rR]|[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[cC][oO][nN][tT][aA][iI][nN][eE][rR]|[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[gG][rR][oO][uU][pP]-[cC][oO][nN][tT][aA][iI][nN][eE][rR]|[tT][oO][cC]|[pP][aA][gG][eE]-[bB][rR][eE][aA][kK]|[pP][aA][rR][aA][gG][rR][aA][pP][hH]|[hH][rR]|[iI][mM][aA][gG][eE]|[lL][iI][sS][tT]|[lL][iI][sS][tT]-[iI][tT][eE][mM]|[tT][aA][bB][lL][eE]|[tT][rR]|[tT][dD]|[nN][oO][tT][eE]-[pP][aA][rR][aA]|[tT][eE][xX][tT]|[bB][rR]|[tT][eE][xX][tT]-[fF][oO][rR][mM][aA][tT]|[sS][eE][nN][tT][eE][nN][cC][eE]|[lL][iI][nN][kK]|[aA][nN][cC][hH][oO][rR]|[lL][aA][nN][gG]|[nN][oO][nN]-[eE][gG][wW]|[eE][nN][tT][iI][tT][yY]|[nN][oO][tT][eE]|[cC][oO][lL][oO][rR])(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[hH][eE][aA][dD][iI][nN][gG]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/heading-container"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/paragraph-container"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[gG][rR][oO][uU][pP]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/paragraph-group-container"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][oO][cC])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/toc"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][gG][eE]-[bB][rR][eE][aA][kK])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/page-break"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/paragraph"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[hH][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/hr"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[iI][mM][aA][gG][eE])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/image"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[lL][iI][sS][tT])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/list"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[lL][iI][sS][tT]-[iI][tT][eE][mM])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/list-item"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][aA][bB][lL][eE])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/table"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/tr"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][dD])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/td"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[nN][oO][tT][eE]-[pP][aA][rR][aA])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/note-para"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][eE][xX][tT])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[bB][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/br"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][eE][xX][tT]-[fF][oO][rR][mM][aA][tT])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/text-format"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[sS][eE][nN][tT][eE][nN][cC][eE])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/sentence"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[lL][iI][nN][kK])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/link"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[aA][nN][cC][hH][oO][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/anchor"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[lL][aA][nN][gG])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/lang"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[nN][oO][nN]-[eE][gG][wW])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/non-egw"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[eE][nN][tT][iI][tT][yY])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/entity"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[nN][oO][tT][eE])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/note"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[cC][oO][lL][oO][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/color"
+          }
+        }
+      ]
+    },
+    "container": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[hH][eE][aA][dD][iI][nN][gG]-[cC][oO][nN][tT][aA][iI][nN][eE][rR]|[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[cC][oO][nN][tT][aA][iI][nN][eE][rR]|[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[gG][rR][oO][uU][pP]-[cC][oO][nN][tT][aA][iI][nN][eE][rR]|[tT][oO][cC]|[pP][aA][gG][eE]-[bB][rR][eE][aA][kK])(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[hH][eE][aA][dD][iI][nN][gG]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/heading-container"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/paragraph-container"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[gG][rR][oO][uU][pP]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/paragraph-group-container"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][oO][cC])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/toc"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][gG][eE]-[bB][rR][eE][aA][kK])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/page-break"
+          }
+        }
+      ]
+    },
+    "block": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]|[hH][rR]|[iI][mM][aA][gG][eE]|[lL][iI][sS][tT]|[tT][aA][bB][lL][eE]|[nN][oO][tT][eE]-[pP][aA][rR][aA])(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/paragraph"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[hH][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/hr"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[iI][mM][aA][gG][eE])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/image"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[lL][iI][sS][tT])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/list"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][aA][bB][lL][eE])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/table"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[nN][oO][tT][eE]-[pP][aA][rR][aA])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/note-para"
+          }
+        }
+      ]
+    },
+    "inline": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[tT][eE][xX][tT]|[bB][rR]|[tT][eE][xX][tT]-[fF][oO][rR][mM][aA][tT]|[sS][eE][nN][tT][eE][nN][cC][eE]|[lL][iI][nN][kK]|[aA][nN][cC][hH][oO][rR]|[lL][aA][nN][gG]|[nN][oO][nN]-[eE][gG][wW]|[eE][nN][tT][iI][tT][yY]|[nN][oO][tT][eE]|[cC][oO][lL][oO][rR]|[pP][aA][gG][eE]-[bB][rR][eE][aA][kK])(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][eE][xX][tT])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[bB][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/br"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][eE][xX][tT]-[fF][oO][rR][mM][aA][tT])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/text-format"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[sS][eE][nN][tT][eE][nN][cC][eE])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/sentence"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[lL][iI][nN][kK])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/link"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[aA][nN][cC][hH][oO][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/anchor"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[lL][aA][nN][gG])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/lang"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[nN][oO][nN]-[eE][gG][wW])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/non-egw"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[eE][nN][tT][iI][tT][yY])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/entity"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[nN][oO][tT][eE])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/note"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[cC][oO][lL][oO][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/color"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][gG][eE]-[bB][rR][eE][aA][kK])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/page-break"
+          }
+        }
+      ]
+    },
+    "row-heading-container": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[hH][eE][aA][dD][iI][nN][gG]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+        },
+        "level": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "alt-text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "override-chapter-number": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "skip": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
+        },
+        "background": {
+          "$ref": "#/$defs/color-value"
+        },
+        "foreground": {
+          "$ref": "#/$defs/color-value"
+        },
+        "child": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refcode-short": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refcode-long": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "child",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "row-paragraph-container": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "indent": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "align": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "skip": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
+        },
+        "background": {
+          "$ref": "#/$defs/color-value"
+        },
+        "foreground": {
+          "$ref": "#/$defs/color-value"
+        },
+        "child": {
+          "$ref": "#/$defs/block"
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refcode-short": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refcode-long": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "child",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "row-paragraph-group-container": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[gG][rR][oO][uU][pP]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "$comment": "Unknown optional enum strings use their default value on import."
+        },
+        "skip": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/paragraph-container"
+          },
+          "default": []
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refcode-short": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refcode-long": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "row-toc": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[tT][oO][cC])(?![\\s\\S])"
+        },
+        "child": {
+          "$ref": "#/$defs/paragraph"
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refcode-short": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refcode-long": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "child",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "row-page-break": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[pP][aA][gG][eE]-[bB][rR][eE][aA][kK])(?![\\s\\S])"
+        },
+        "number": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refcode-short": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refcode-long": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "row": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^(?:[hH][eE][aA][dD][iI][nN][gG]-[cC][oO][nN][tT][aA][iI][nN][eE][rR]|[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[cC][oO][nN][tT][aA][iI][nN][eE][rR]|[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[gG][rR][oO][uU][pP]-[cC][oO][nN][tT][aA][iI][nN][eE][rR]|[tT][oO][cC]|[pP][aA][gG][eE]-[bB][rR][eE][aA][kK])(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[hH][eE][aA][dD][iI][nN][gG]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/row-heading-container"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/row-paragraph-container"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][rR][aA][gG][rR][aA][pP][hH]-[gG][rR][oO][uU][pP]-[cC][oO][nN][tT][aA][iI][nN][eE][rR])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/row-paragraph-group-container"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[tT][oO][cC])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/row-toc"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^(?:[pP][aA][gG][eE]-[bB][rR][eE][aA][kK])(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/row-page-break"
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/int32"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^(?:[bB][oO][oO][kK]|[dD][eE][vV][oO][tT][iI][oO][nN][aA][lL]|[bB][iI][bB][lL][eE]-[cC][oO][mM][mM][eE][nN][tT][aA][rR][yY]|[bB][iI][bB][lL][eE]|[pP][eE][rR][iI][oO][dD][iI][cC][aA][lL]/[pP][aA][gG][eE]-[bB][rR][eE][aA][kK]|[pP][eE][rR][iI][oO][dD][iI][cC][aA][lL]/[nN][oO]-[pP][aA][gG][eE]-[bB][rR][eE][aA][kK]|[mM][aA][nN][uU][sS][cC][rR][iI][pP][tT]-[vV][oO][lL][uU][mM][eE]|[dD][iI][cC][tT][iI][oO][nN][aA][rR][yY]|[tT][oO][pP][iI][cC][aA][lL]-[iI][nN][dD][eE][xX]|[sS][cC][rR][iI][pP][tT][uU][rR][eE]-[iI][nN][dD][eE][xX])(?![\\s\\S])"
+        },
+        "language": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "original-id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/int32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version-id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/guid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "author": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "publisher": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "publication-year": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "publication-start-year": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "publication-end-year": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "total-pages": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "isbn": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "purchase-link": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "language",
+        "code"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

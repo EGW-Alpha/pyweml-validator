@@ -27,7 +27,7 @@ class ContainerBlockTestCase(unittest.TestCase):
         assert_incorrect_node('<w-heading level="1"><br/></w-heading>')
         assert_incorrect_node('<w-heading level="0"><w-text-block>text</w-text-block></w-heading>')
         assert_incorrect_node('<w-heading level="7"><w-text-block>text</w-text-block></w-heading>')
-        assert_incorrect_node('<w-heading skip="0" level="1"><w-text-block>text</w-text-block></w-heading>')
+        assert_correct_node('<w-heading skip="0" level="1"><w-text-block>text</w-text-block></w-heading>')
         assert_incorrect_node('''<w-heading level="1">
                                     <w-text-block>text</w-text-block>
                                     <w-text-block>text</w-text-block>
@@ -38,15 +38,15 @@ class ContainerBlockTestCase(unittest.TestCase):
         assert_correct_node('<w-para><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para attr="value"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para> x <w-text-block>text</w-text-block></w-para>')
-        # indent should be 0+ (non-negative), not negative values
+        # Paragraph indentation starts at -4 and has no upper bound.
         assert_correct_node(
             '<w-para skip="1" indent="5" role="date" align="right"><w-text-block>text</w-text-block></w-para>')
-        # Test that negative indent values are now rejected
+        # Values below -4 are rejected.
         assert_incorrect_node('<w-para indent="-5"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para indent="a"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para role="a"><w-text-block>text</w-text-block></w-para>')
         assert_incorrect_node('<w-para align="a"><w-text-block>text</w-text-block></w-para>')
-        assert_incorrect_node('<w-para skip="a"><w-text-block>text</w-text-block></w-para>')
+        assert_correct_node('<w-para skip="a"><w-text-block>text</w-text-block></w-para>')
         assert_correct_node('<w-para ><hr/></w-para>')
         assert_incorrect_node('<w-para><hr/><hr/></w-para>')
         assert_correct_node('<w-para ><w-list><w-li><w-text-block></w-text-block></w-li></w-list></w-para>')
@@ -56,7 +56,7 @@ class ContainerBlockTestCase(unittest.TestCase):
         assert_correct_node(f'<w-para-group>{para}</w-para-group>')
         assert_correct_node(f'<w-para-group skip="1">{para}</w-para-group>')
         assert_correct_node(f'<w-para-group>{para}{para}</w-para-group>')
-        assert_incorrect_node(f'<w-para-group skip="2">{para}</w-para-group>')
+        assert_correct_node(f'<w-para-group skip="2">{para}</w-para-group>')
         assert_incorrect_node(f'<w-para-group></w-para-group>')
         assert_incorrect_node(f'<w-para-group>{para}a{para}</w-para-group>')
 
@@ -90,17 +90,18 @@ class ContainerBlockTestCase(unittest.TestCase):
         assert_correct_node(f'<td align="center"></td>')
         assert_incorrect_node(f'<td align="bad"></td>')
         assert_correct_node(f'<td valign="top"></td>')
-        assert_correct_node(f'<td valign="middle"></td>')
+        assert_correct_node(f'<td valign="center"></td>')
+        assert_incorrect_node(f'<td valign="middle"></td>')
         assert_correct_node(f'<td valign="bottom"></td>')
         assert_incorrect_node(f'<td valign="bad"></td>')
         assert_correct_node(f'<td colspan="1"></td>')
         assert_correct_node(f'<td colspan="10"></td>')
         assert_incorrect_node(f'<td colspan="0"></td>')
-        assert_incorrect_node(f'<td colspan="11"></td>')
+        assert_correct_node(f'<td colspan="11"></td>')
         assert_correct_node(f'<td rowspan="1"></td>')
         assert_correct_node(f'<td rowspan="10"></td>')
         assert_incorrect_node(f'<td rowspan="0"></td>')
-        assert_incorrect_node(f'<td rowspan="11"></td>')
+        assert_correct_node(f'<td rowspan="11"></td>')
 
     def test_th(self):  # TODO improve
         assert_correct_node(f'<th></th>')
@@ -116,7 +117,7 @@ class ContainerBlockTestCase(unittest.TestCase):
             f'<tr><hr/></tr>')
 
     def test_thead(self):
-        assert_correct_node(f'<thead></thead>')
+        assert_incorrect_node(f'<thead></thead>')
         assert_correct_node(
             f'<thead><tr><td></td><td></td></tr></thead>')
         assert_incorrect_node(
@@ -125,8 +126,8 @@ class ContainerBlockTestCase(unittest.TestCase):
     def test_table(self):
         assert_correct_node(f'<table></table>')
         assert_incorrect_node(f'<table>x</table>')
-        assert_correct_node(f'<table><thead></thead></table>')
-        assert_correct_node(f'<table><tbody></tbody></table>')
+        assert_correct_node(f'<table><thead><tr></tr></thead></table>')
+        assert_correct_node(f'<table><tbody><tr></tr></tbody></table>')
         assert_incorrect_node(f'<table><tbody></tbody><tbody></tbody></table>')
 
 
@@ -198,7 +199,7 @@ class InlinesTestCase(unittest.TestCase):
         assert_incorrect_node(create_typed_format("bold", "<z/>"))
 
     def test_w_lang(self):
-        # According to spec: both lang and dir are optional (No - not required)
+        # Both lang and dir are optional.
         assert_correct_node("<w-lang lang='en' dir='ltr'>test</w-lang>")
         assert_correct_node("<w-lang lang='en' dir='rtl'>test</w-lang>")
         assert_correct_node("<w-lang lang='en'>test</w-lang>")
@@ -206,7 +207,7 @@ class InlinesTestCase(unittest.TestCase):
         assert_correct_node("<w-lang dir='ltr'>test</w-lang>")
         # Empty w-lang should be valid (both attributes optional)
         assert_correct_node("<w-lang>test</w-lang>")
-        # Test that very long lang codes are rejected (MaxLength=12)
+        # Invalid BCP 47 subtag ordering is rejected.
         assert_incorrect_node("<w-lang lang='very-long-code'>test</w-lang>")
 
     def test_w_entity(self):
@@ -215,7 +216,7 @@ class InlinesTestCase(unittest.TestCase):
         assert_incorrect_node("<w-entity type='wrong'></w-entity>")
 
     def test_note(self):
-        # According to spec: w-note-body contains w-note-para, which contains w-text-block
+        # w-note-body contains w-note-para, which contains w-text-block.
         correct_content = ('<w-note-header>Header</w-note-header>'
                            '<w-note-body><w-note-para><w-text-block>Body</w-text-block></w-note-para></w-note-body>')
         assert_correct_node(f'<w-note>{correct_content}</w-note>')
@@ -240,7 +241,7 @@ class InlinesTestCase(unittest.TestCase):
         # Test w-note-header with inline elements (allowed per spec)
         assert_correct_node(
             '''<w-note>
-                <w-note-header><a href="#ref">8</a></w-note-header>
+                <w-note-header><a href="egw://book/127.1#ref">8</a></w-note-header>
                 <w-note-body><w-note-para><w-text-block>Body</w-text-block></w-note-para></w-note-body>
             </w-note>'''
         )
@@ -273,8 +274,8 @@ class InlinesTestCase(unittest.TestCase):
                 text
             </w-note>'''
         )
-        # Test w-note-header with inline tag (br) should fail - header should contain only text or specific inline elements
-        assert_incorrect_node(
+        # Note headers accept any inline element.
+        assert_correct_node(
             '''<w-note>
                 <w-note-header>Header<br/></w-note-header>
                 <w-note-body><w-note-para><w-text-block>Body</w-text-block></w-note-para></w-note-body>
