@@ -1,18 +1,21 @@
 [tool.poetry]
 name = "weml-validator"
-version = "0.2.0"
-description = "Validator for the WEML document format by EGW Writings"
-authors = ["Kyrylo Kobets <mjr@itage.biz>"]
+version = "0.5.0"
+description = "Validators for WEML markup and JSON publications by EGW Writings"
+authors = ["Kyrylo Kobets <mjr@itage.biz>", "Rodion Kolosov <burjuy@itage.biz>"]
 readme = "README.md"
+packages = [{ include = "weml_validator" }, { include = "json_validator" }]
+include = [{ path = "json_validator/weml.schema.json", format = ["sdist", "wheel"] }]
 
 [tool.poetry.dependencies]
-python = "^3.12"
-bs4 = "^0.0.2"
+python = "^3.13"
+beautifulsoup4 = "^4.15"
+jsonschema = "^4.26"
 
 
 [tool.poetry.group.test.dependencies]
 assertpy = "^1.1"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.4,<3"]
 build-backend = "poetry.core.masonry.api"

@@ -13,7 +13,11 @@ class ValidatorBase:
     def tag(self):
         return self._tag
 
-    def validate(self, tag: bs4.Tag) -> ValidationResult:
+    @property
+    def attribute_names(self) -> set[str]:
+        return set(self._attribute_rules)
+
+    def validate(self, tag: bs4.Tag, *, allow_extra_attributes: bool = False) -> ValidationResult:
         result = ValidationResult.success()
         if tag.name != self.tag:  # pragma: no cover
             result.add_node_error("Invalid tag", tag)
@@ -24,7 +28,7 @@ class ValidatorBase:
             for rule in rule_set:
                 if not rule.validate(attr_value, tag):
                     result.add_node_error(f"Attribute {attr} failed validation with rule: {rule}", tag)
-        if len(existing_attrs) > 0:
+        if existing_attrs and not allow_extra_attributes:
             result.add_node_error(f"Unexpected attributes: {existing_attrs}", tag)
         return result
 
@@ -39,12 +43,14 @@ class ValidatorRepository:
     def get_validator(self, tag: str) -> ValidatorBase:
         return self._validators[tag]
 
-    def validate(self, element: bs4.Tag) -> ValidationResult:
+    def validate(self, element: bs4.Tag, *, allow_extra_attributes: bool = False) -> ValidationResult:
         tag = element.name
         if tag not in self._validators:
-            return ValidationResult(False, [ValidationError(tag, 0, 0)])
+            result = ValidationResult.success()
+            result.add_node_error(f"Unknown tag `{tag}`", element)
+            return result
         validator = self.get_validator(tag)
-        return validator.validate(element)
+        return validator.validate(element, allow_extra_attributes=allow_extra_attributes)
 
     @classmethod
     def get_instance(cls):
